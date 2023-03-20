@@ -2,7 +2,7 @@
 
 Clone of Fruit Ninja game made in Unity. Another project made for Android.
 
-## Current apk version: 1.0.0
+## Current apk version: 1.1.0
 
 ## Download
 

@@ -4,6 +4,7 @@ public class Fruit : MonoBehaviour
 {
     public GameObject whole;
     public GameObject sliced;
+    public AudioSource sliceSound;
 
     private Rigidbody fruitRigidbody;
     private Collider fruitCollider;
@@ -21,6 +22,7 @@ public class Fruit : MonoBehaviour
     private void Slice(Vector3 direction, Vector3 position, float force)
     {
         FindObjectOfType<GameManager>().IncreaseScore(points);
+        sliceSound.Play();
 
         whole.SetActive(false);
         sliced.SetActive(true);
