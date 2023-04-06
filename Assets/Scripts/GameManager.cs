@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     public Canvas mainMenu;
     public Button easy;
     public Button hard;
+    public AudioSource gameOverSound;
+    public AudioSource BGMusic;
     public int fruitsLeft;
     private Blade blade;
     private Spawner spawner;
@@ -30,7 +32,10 @@ public class GameManager : MonoBehaviour
     }
     public void NewGame()
     {
-        
+        if (!BGMusic.isPlaying)
+        {
+            BGMusic.Play();
+        }  
         mainMenu.gameObject.SetActive(false);
         scoreText.gameObject.SetActive(true);
         if (difficulty != 0)
@@ -113,6 +118,8 @@ public class GameManager : MonoBehaviour
         mainMenu.gameObject.SetActive(true);
         gameOverText.gameObject.SetActive(true);
         Time.timeScale = 0f;
+        BGMusic.Pause();
+        gameOverSound.Play();
         if (difficulty != 0)
         {
             hard.Select();
