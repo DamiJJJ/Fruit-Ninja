@@ -6,6 +6,7 @@ public class Fruit : MonoBehaviour
     public GameObject sliced;
     public AudioSource sliceSound;
 
+    private GameManager gameManager;
     private Rigidbody fruitRigidbody;
     private Collider fruitCollider;
     private ParticleSystem juiceParticleEffect;
@@ -14,11 +15,11 @@ public class Fruit : MonoBehaviour
 
     private void Awake()
     {
+        gameManager = FindObjectOfType<GameManager>();
         fruitRigidbody = GetComponent<Rigidbody>();
         fruitCollider = GetComponent<Collider>();
         juiceParticleEffect = GetComponentInChildren<ParticleSystem>();
     }
-
     private void Slice(Vector3 direction, Vector3 position, float force)
     {
         FindObjectOfType<GameManager>().IncreaseScore(points);
@@ -48,6 +49,19 @@ public class Fruit : MonoBehaviour
         {
             Blade blade = other.GetComponent<Blade>();
             Slice(blade.direction, blade.transform.position, blade.sliceForce);
+        }
+
+        if (other.CompareTag("NotSliced"))
+        {
+            if(whole.activeSelf)
+            {
+                gameManager.fruitsLeft -= 1;
+                gameManager.fruitsLeftText.text = gameManager.fruitsLeft.ToString();
+                if (gameManager.fruitsLeft == 0)
+                {
+                    gameManager.GameOverScreen();   
+                }
+            }            
         }
     }
 }

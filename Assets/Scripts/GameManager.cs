@@ -5,31 +5,43 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public Text scoreText;
+    public Text fruitsLeftText;
     public Text hiScoreText;
     public Text gameOverText;
     public Image fadeImage;
     public Canvas mainMenu;
+    public Button easy;
+    public Button hard;
+    public int fruitsLeft;
     private Blade blade;
     private Spawner spawner;
     private int score;
+    private int difficulty = 0;
     private bool gameOver = false;
 
     private void Awake()
     {
+        easy.Select();
         blade = FindObjectOfType<Blade>();
         spawner = FindAnyObjectByType<Spawner>();
         blade.enabled = false;
         spawner.enabled = false;
         UpdateHiscore();
     }
-    // private void Start()
-    // {
-    //     NewGame();
-    // }
     public void NewGame()
     {
+        
         mainMenu.gameObject.SetActive(false);
         scoreText.gameObject.SetActive(true);
+        if (difficulty != 0)
+        {
+            fruitsLeftText.gameObject.SetActive(true);
+            SetHardDifficulty();
+        }
+        else
+        {
+            SetEasyDifficulty();
+        }
         gameOverText.gameObject.SetActive(false);
 
         Time.timeScale = 1f;
@@ -39,7 +51,9 @@ public class GameManager : MonoBehaviour
 
         score = 0;
         scoreText.text = score.ToString();
+
         ClearScene();
+     
         if(gameOver)
         {
             StartCoroutine(DeFadeSequence());
@@ -64,6 +78,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void SetEasyDifficulty()
+    {
+        difficulty = 0;
+        spawner.bombChance = 0.05f;
+        fruitsLeftText.gameObject.SetActive(false);
+    }
+
+    public void SetHardDifficulty()
+    {
+        difficulty = 1;
+        spawner.bombChance = 0.1f;
+        fruitsLeft = 5;
+        fruitsLeftText.text = fruitsLeft.ToString();
+    }
     public void IncreaseScore(int amount)
     {
         score += amount;
@@ -85,6 +113,14 @@ public class GameManager : MonoBehaviour
         mainMenu.gameObject.SetActive(true);
         gameOverText.gameObject.SetActive(true);
         Time.timeScale = 0f;
+        if (difficulty != 0)
+        {
+            hard.Select();
+        }
+        else
+        {
+            easy.Select();
+        }
     }
 
     private IEnumerator FadeSequence()
