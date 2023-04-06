@@ -5,22 +5,33 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public Text scoreText;
+    public Text hiScoreText;
+    public Text gameOverText;
     public Image fadeImage;
+    public Canvas mainMenu;
     private Blade blade;
     private Spawner spawner;
     private int score;
+    private bool gameOver = false;
 
     private void Awake()
     {
         blade = FindObjectOfType<Blade>();
         spawner = FindAnyObjectByType<Spawner>();
+        blade.enabled = false;
+        spawner.enabled = false;
+        UpdateHiscore();
     }
-    private void Start()
+    // private void Start()
+    // {
+    //     NewGame();
+    // }
+    public void NewGame()
     {
-        NewGame();
-    }
-    private void NewGame()
-    {
+        mainMenu.gameObject.SetActive(false);
+        scoreText.gameObject.SetActive(true);
+        gameOverText.gameObject.SetActive(false);
+
         Time.timeScale = 1f;
 
         blade.enabled = true;
@@ -29,6 +40,11 @@ public class GameManager : MonoBehaviour
         score = 0;
         scoreText.text = score.ToString();
         ClearScene();
+        if(gameOver)
+        {
+            StartCoroutine(DeFadeSequence());
+            gameOver = false;
+        } 
     }
 
     private void ClearScene()
@@ -57,12 +73,21 @@ public class GameManager : MonoBehaviour
     public void Explode()
     {
         blade.enabled = false;
-        spawner.enabled = false;
+        spawner.enabled = false;       
 
-        StartCoroutine(ExplodeSequence());
+        StartCoroutine(FadeSequence());
     }
 
-    private IEnumerator ExplodeSequence()
+    public void GameOverScreen()
+    {
+        UpdateHiscore();
+        gameOver = true;
+        mainMenu.gameObject.SetActive(true);
+        gameOverText.gameObject.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    private IEnumerator FadeSequence()
     {
         float elapsed = 0f;
         float duration = 0.5f;
@@ -78,11 +103,13 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSecondsRealtime(1f);
+        GameOverScreen();   
+    }
 
-        NewGame();
-
-        elapsed = 0f;
+    private IEnumerator DeFadeSequence()
+    {
+        float elapsed = 0f;
+        float duration = 0.5f;
 
         while (elapsed < duration)
         {
@@ -93,5 +120,18 @@ public class GameManager : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    private void UpdateHiscore()
+    {
+        float hiscore = PlayerPrefs.GetFloat("hiscore", 0);
+
+        if (score > hiscore)
+        {
+            hiscore = score;
+            PlayerPrefs.SetFloat("hiscore", hiscore);
+        }
+
+        hiScoreText.text = Mathf.FloorToInt(hiscore).ToString();
     }
 }
